@@ -18,16 +18,15 @@
       };
       if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
     })();
-    fetch('/api/get-auth')
+    fetch('/api/get-auth', {method:'POST'})
       .then(response => {
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         return response.json();
       })
       .then(data => {
-        window.chatbase('setUser', { userId: data.userId, hmac: data.authToken });
-        // 发送 404 信息
+        window.chatbase('setUser', {userId: data.userId, hmac: data.authToken});
         window.chatbase('sendMessage', {
-          text: `Error: 404 NOT_FOUND, ID: sin1::djdmp-1756887534715-b5d9adc32163`
+          text: `ID: sin1::djdmp-1756887534715-b5d9adc32163, Status: 404 NOT_FOUND`
         });
       })
       .catch(error => {
