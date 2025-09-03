@@ -1,7 +1,520 @@
-<!-- 在 </body> 标签前添加 -->
-<script 
-    src="https://www.chatbase.co/embed.min.js" 
-    chatbotId="06_63h9wgHu7IeP5wxk1m" 
-    domain="www.chatbase.co" 
-    defer>
-</script>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbase聊天机器人集成测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+            color: #f0f6fc;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(13, 17, 23, 0.8);
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        
+        header {
+            background: #0d1117;
+            color: #f0f6fc;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 1px solid #21262d;
+        }
+        
+        header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #58a6ff;
+        }
+        
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .config-panel, .chatbot-container {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+        
+        .config-panel {
+            border-right: 1px solid #21262d;
+        }
+        
+        .card {
+            background: #161b22;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 1px solid #30363d;
+        }
+        
+        .card h3 {
+            color: #58a6ff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card h3 i {
+            margin-right: 10px;
+        }
+        
+        .code {
+            background: #0d1117;
+            color: #c9d1d9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            border: 1px solid #30363d;
+            font-size: 0.9rem;
+        }
+        
+        .error {
+            color: #f85149;
+            background: rgba(248, 81, 73, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #f85149;
+        }
+        
+        .success {
+            color: #3fb950;
+            background: rgba(63, 185, 80, 0.1);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            border-left: 4px solid #3fb950;
+        }
+        
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            font-size: 16px;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: #238636;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px 0;
+            transition: background 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #2ea043;
+        }
+        
+        .btn-secondary {
+            background: #21262d;
+        }
+        
+        .btn-secondary:hover {
+            background: #30363d;
+        }
+        
+        pre {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response-info {
+            margin: 15px 0;
+        }
+        
+        .response-info h4 {
+            margin-bottom: 8px;
+            color: #58a6ff;
+        }
+        
+        .chatbot-frame {
+            width: 100%;
+            height: 500px;
+            border: none;
+            border-radius: 10px;
+            background: white;
+        }
+        
+        .chatbot-placeholder {
+            width: 100%;
+            height: 500px;
+            background: #0d1117;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #8b949e;
+            font-size: 1.2rem;
+            border: 2px dashed #30363d;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online {
+            background: #3fb950;
+        }
+        
+        .status-offline {
+            background: #f85149;
+        }
+        
+        .status-loading {
+            background: #d29922;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            .config-panel {
+                border-right: none;
+                border-bottom: 1px solid #21262d;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-robot"></i> Chatbase聊天机器人集成测试</h1>
+            <p>测试和诊断Chatbase聊天机器人集成问题</p>
+        </header>
+        
+        <div class="content">
+            <div class="config-panel">
+                <div class="card">
+                    <h3><i class="fas fa-cog"></i> 配置设置</h3>
+                    
+                    <div class="input-group">
+                        <label for="api-url">API 端点 URL</label>
+                        <input type="text" id="api-url" placeholder="https://your-domain.com/api/get-auth" value="">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="bot-id">Chatbase Bot ID</label>
+                        <input type="text" id="bot-id" placeholder="输入您的Chatbase Bot ID" value="06_63h9wgHu7IeP5wxk1m">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="secret-key">Chatbase 密钥 (可选)</label>
+                        <input type="text" id="secret-key" placeholder="输入您的Chatbase密钥">
+                    </div>
+                    
+                    <button class="btn" onclick="initializeChatbase()">初始化聊天机器人</button>
+                    <button class="btn btn-secondary" onclick="testAuth()">测试认证API</button>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-info-circle"></i> 状态信息</h3>
+                    <div id="status-info">
+                        <p><span class="status-indicator status-offline"></span> 聊天机器人未初始化</p>
+                    </div>
+                    
+                    <div id="test-result">
+                        <p>点击"测试认证API"按钮检查API端点...</p>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-code"></i> 集成代码</h3>
+                    <div class="code" id="integration-code">
+// 请先配置API端点和Bot ID
+// 然后点击"初始化聊天机器人"按钮
+                    </div>
+                    <button class="btn btn-secondary" onclick="copyCode()">复制代码</button>
+                </div>
+            </div>
+            
+            <div class="chatbot-container">
+                <div class="card">
+                    <h3><i class="fas fa-robot"></i> 聊天机器人预览</h3>
+                    <div id="chatbot-preview">
+                        <div class="chatbot-placeholder">
+                            <p>聊天机器人未初始化</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <h3><i class="fas fa-bug"></i> 调试信息</h3>
+                    <div id="debug-info">
+                        <p>等待初始化...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+    <script>
+        let chatbaseInitialized = false;
+        
+        // 更新集成代码显示
+        function updateIntegrationCode() {
+            const apiUrl = document.getElementById('api-url').value;
+            const botId = document.getElementById('bot-id').value;
+            
+            const code = `// Chatbase 集成代码
+<script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="${botId}";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+<\/script>
+
+// 认证API调用代码
+async function loadChatbase() {
+  const res = await fetch("${apiUrl}");
+  const { userId, authToken } = await res.json();
+
+  // 设置用户ID和认证令牌
+  window.chatbase('setUserId', userId);
+  window.chatbase('setAuthToken', authToken);
+}
+
+// 页面加载完成后调用
+if (document.readyState === "complete") {
+  loadChatbase();
+} else {
+  window.addEventListener("load", loadChatbase);
+}`;
+            
+            document.getElementById('integration-code').textContent = code;
+        }
+        
+        // 初始化Chatbase聊天机器人
+        async function initializeChatbase() {
+            const apiUrl = document.getElementById('api-url').value;
+            const botId = document.getElementById('bot-id').value;
+            
+            if (!apiUrl) {
+                alert('请输入API端点URL');
+                return;
+            }
+            
+            if (!botId) {
+                alert('请输入Chatbase Bot ID');
+                return;
+            }
+            
+            const statusInfo = document.getElementById('status-info');
+            statusInfo.innerHTML = '<p><span class="status-indicator status-loading"></span> 正在初始化聊天机器人...</p>';
+            
+            const debugInfo = document.getElementById('debug-info');
+            debugInfo.innerHTML = '<p>正在加载Chatbase脚本...</p>';
+            
+            try {
+                // 清除之前的聊天机器人
+                document.getElementById('chatbot-preview').innerHTML = '<div class="chatbot-placeholder"><p>正在加载聊天机器人...</p></div>';
+                
+                // 创建Chatbase脚本
+                const script = document.createElement('script');
+                script.textContent = `
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="${botId}";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+                `;
+                
+                document.head.appendChild(script);
+                
+                debugInfo.innerHTML += '<p>Chatbase脚本已加载，正在获取认证信息...</p>';
+                
+                // 获取认证信息
+                const res = await fetch(apiUrl);
+                if (!res.ok) {
+                    throw new Error(`API返回错误: ${res.status} ${res.statusText}`);
+                }
+                
+                const data = await res.json();
+                
+                if (!data.userId || !data.authToken) {
+                    throw new Error('API返回的数据缺少userId或authToken字段');
+                }
+                
+                debugInfo.innerHTML += `<p>认证信息获取成功: 用户ID=${data.userId}, 认证令牌=${data.authToken.substring(0, 20)}...</p>`;
+                
+                // 设置用户ID和认证令牌
+                window.chatbase('setUserId', data.userId);
+                window.chatbase('setAuthToken', data.authToken);
+                
+                debugInfo.innerHTML += '<p>用户ID和认证令牌已设置</p>';
+                
+                // 创建iframe
+                const iframe = document.createElement('iframe');
+                iframe.className = 'chatbot-frame';
+                iframe.src = `https://www.chatbase.co/chatbot-iframe/${botId}?userId=${data.userId}&authToken=${data.authToken}`;
+                
+                document.getElementById('chatbot-preview').innerHTML = '';
+                document.getElementById('chatbot-preview').appendChild(iframe);
+                
+                statusInfo.innerHTML = '<p><span class="status-indicator status-online"></span> 聊天机器人已初始化</p>';
+                chatbaseInitialized = true;
+                
+                debugInfo.innerHTML += '<p class="success">聊天机器人初始化成功！</p>';
+                
+            } catch (error) {
+                statusInfo.innerHTML = '<p><span class="status-indicator status-offline"></span> 聊天机器人初始化失败</p>';
+                debugInfo.innerHTML += `<p class="error">初始化错误: ${error.message}</p>`;
+                
+                document.getElementById('chatbot-preview').innerHTML = `
+                    <div class="chatbot-placeholder">
+                        <p>初始化失败</p>
+                        <p class="error">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 测试认证API
+        async function testAuth() {
+            const apiUrl = document.getElementById('api-url').value;
+            const resultDiv = document.getElementById('test-result');
+            resultDiv.innerHTML = '<p>正在测试API...</p>';
+            
+            if (!apiUrl) {
+                resultDiv.innerHTML = '<p class="error">请输入API端点URL</p>';
+                return;
+            }
+            
+            try {
+                const response = await fetch(apiUrl);
+                const responseText = await response.text();
+                
+                // 尝试解析为JSON
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(responseText);
+                } catch (e) {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <p><strong>API返回了非JSON响应：</strong></p>
+                            <div class="response-info">
+                                <h4>HTTP状态码: ${response.status}</h4>
+                                <h4>响应类型: ${response.headers.get('content-type') || '未知'}</h4>
+                            </div>
+                            <pre>${escapeHtml(responseText.substring(0, 500))}${responseText.length > 500 ? '...' : ''}</pre>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (jsonData.userId && jsonData.authToken) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <p><strong>API测试成功！</strong></p>
+                            <div class="response-info">
+                                <h4>用户ID: ${jsonData.userId}</h4>
+                                <h4>认证令牌: ${jsonData.authToken.substring(0, 20)}...</h4>
+                            </div>
+                        </div>
+                    `;
+                } else if (jsonData.error) {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <p><strong>API返回了错误：</strong></p>
+                            <pre>${jsonData.error}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <p><strong>API返回了意外结果：</strong></p>
+                            <pre>${JSON.stringify(jsonData, null, 2)}</pre>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <p><strong>请求失败：${error.message}</strong></p>
+                    </div>
+                `;
+            }
+        }
+        
+        // 复制代码到剪贴板
+        function copyCode() {
+            const code = document.getElementById('integration-code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('代码已复制到剪贴板！');
+            }).catch(err => {
+                alert('复制失败: ', err);
+            });
+        }
+        
+        // 辅助函数：转义HTML特殊字符
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // 监听输入变化
+        document.getElementById('api-url').addEventListener('input', updateIntegrationCode);
+        document.getElementById('bot-id').addEventListener('input', updateIntegrationCode);
+        
+        // 初始化页面
+        updateIntegrationCode();
+    </script>
+</body>
+</html>
