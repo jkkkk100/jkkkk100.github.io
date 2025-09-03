@@ -1,0 +1,8 @@
+# 环境变量文件
+.env
+.env.local
+.env.production
+
+# 其他敏感文件
+config.json
+secrets/
