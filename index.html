@@ -20,14 +20,10 @@
       };
       if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
     })();
-    // 调用 /api/get-auth 获取 userId 和 authToken
     fetch('/api/get-auth', { method: 'POST' })
       .then(response => response.json())
       .then(data => {
-        window.chatbase('setUser', {
-          userId: data.userId,
-          hmac: data.authToken
-        });
+        window.chatbase('setUser', { userId: data.userId, hmac: data.authToken });
       })
       .catch(error => console.error('Error:', error));
   </script>
