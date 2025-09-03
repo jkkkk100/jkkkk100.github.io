@@ -18,10 +18,24 @@
       };
       if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
     })();
-    fetch('/api/get-auth', {method:'POST'})
-      .then(response => response.json())
-      .then(data => window.chatbase('setUser', {userId: data.userId, hmac: data.authToken}))
-      .catch(error => console.error('Error:', error));
+    fetch('/api/get-auth')
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return response.json();
+      })
+      .then(data => {
+        window.chatbase('setUser', { userId: data.userId, hmac: data.authToken });
+        // 发送 404 信息
+        window.chatbase('sendMessage', {
+          text: `Error: 404 NOT_FOUND, ID: sin1::djdmp-1756887534715-b5d9adc32163`
+        });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        window.chatbase('sendMessage', {
+          text: `Fetch failed: ${error.message}, ID: sin1::djdmp-1756887534715-b5d9adc32163`
+        });
+      });
   </script>
 </body>
 </html>
