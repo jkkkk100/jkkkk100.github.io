@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chatbase认证修复方案</title>
+    <title>Chatbase API 测试与调试</title>
     <style>
         * {
             margin: 0;
@@ -55,13 +55,13 @@
             padding: 20px;
         }
         
-        .problem, .solution {
+        .test-area, .result-area {
             flex: 1;
             min-width: 300px;
             padding: 20px;
         }
         
-        .problem {
+        .test-area {
             border-right: 1px solid #21262d;
         }
         
@@ -114,6 +114,26 @@
             border-left: 4px solid #3fb950;
         }
         
+        .input-group {
+            margin: 15px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
+            font-size: 16px;
+        }
+        
         .btn {
             display: inline-block;
             background: #238636;
@@ -132,20 +152,37 @@
             background: #2ea043;
         }
         
-        .test-area {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: #161b22;
-            border-radius: 10px;
-            border: 1px solid #30363d;
+        .btn-secondary {
+            background: #21262d;
+        }
+        
+        .btn-secondary:hover {
+            background: #30363d;
+        }
+        
+        pre {
+            background: #0d1117;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .response-info {
+            margin: 15px 0;
+        }
+        
+        .response-info h4 {
+            margin-bottom: 8px;
+            color: #58a6ff;
         }
         
         @media (max-width: 768px) {
             .content {
                 flex-direction: column;
             }
-            .problem {
+            .test-area {
                 border-right: none;
                 border-bottom: 1px solid #21262d;
             }
@@ -155,105 +192,74 @@
 <body>
     <div class="container">
         <header>
-            <h1><i class="fas fa-bug"></i> Chatbase认证API修复方案</h1>
-            <p>解决get-auth.py中的500内部服务器错误</p>
+            <h1><i class="fas fa-bug"></i> Chatbase API 测试与调试</h1>
+            <p>诊断和解决API端点返回无效JSON的问题</p>
         </header>
         
         <div class="content">
-            <div class="problem">
+            <div class="test-area">
                 <div class="card">
-                    <h3><i class="fas fa-exclamation-triangle"></i> 问题分析</h3>
-                    <p>您的<code>get-auth.py</code>文件返回了500内部服务器错误，代码：<code>FUNCTION_INVOCATION_FAILED</code>。</p>
+                    <h3><i class="fas fa-cog"></i> API 配置</h3>
                     
-                    <div class="error">
-                        <p><strong>错误详情：</strong> ID: sin1::h948p-1756880933757-c0a86b0c4b31</p>
-                        <p>这通常表示函数调用失败，可能是由于以下原因：</p>
-                        <ul>
-                            <li>缺少必要的依赖项</li>
-                            <li>代码语法错误</li>
-                            <li>导入模块失败</li>
-                            <li>函数签名不正确</li>
-                        </ul>
+                    <div class="input-group">
+                        <label for="api-url">API 端点 URL</label>
+                        <input type="text" id="api-url" placeholder="https://your-domain.com/api/get-auth" value="https://your-domain.com/api/get-auth">
                     </div>
+                    
+                    <div class="input-group">
+                        <label for="secret-key">Chatbase 密钥</label>
+                        <input type="text" id="secret-key" placeholder="输入您的Chatbase密钥" value="rhkigrqj0ci7ora0a1iuoz602qjm07d7">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="user-id">用户 ID (可选)</label>
+                        <input type="text" id="user-id" placeholder="输入用户ID或留空自动生成">
+                    </div>
+                    
+                    <button class="btn" onclick="testAuth()">测试 API</button>
+                    <button class="btn btn-secondary" onclick="generateHash()">生成 HMAC 哈希</button>
                 </div>
                 
                 <div class="card">
-                    <h3><i class="fas fa-file-code"></i> 原始代码</h3>
-                    <div class="code">
-# api/get-auth.py<br>
-import hmac, hashlib, time, random<br>
-from flask import Request<br>
-<br>
-SECRET = "rhkigrqj0ci7ora0a1iuoz602qjm07d7"  # 你的 Chatbase 密钥<br>
-<br>
-def handler(request: Request):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;# 随机生成 userId<br>
-&nbsp;&nbsp;&nbsp;&nbsp;user_id = f"guest_{int(time.time())}_{random.randint(1000,9999)}"<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;# 生成 authToken<br>
-&nbsp;&nbsp;&nbsp;&nbsp;auth_token = hmac.new(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SECRET.encode(), user_id.encode(), hashlib.sha256<br>
-&nbsp;&nbsp;&nbsp;&nbsp;).hexdigest()<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;return {<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"userId": user_id,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"authToken": auth_token<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}
+                    <h3><i class="fas fa-info-circle"></i> 问题分析</h3>
+                    <p>错误信息: <code>Unexpected token 'A', "A server e"... is not valid JSON</code></p>
+                    
+                    <div class="error">
+                        <p><strong>这表明：</strong></p>
+                        <ul>
+                            <li>API端点可能返回了HTML错误页面而不是JSON响应</li>
+                            <li>服务器可能返回了500内部服务器错误</li>
+                            <li>API端点URL可能不正确</li>
+                            <li>服务器端代码可能有语法错误或异常</li>
+                        </ul>
                     </div>
                 </div>
             </div>
             
-            <div class="solution">
+            <div class="result-area">
                 <div class="card">
-                    <h3><i class="fas fa-wrench"></i> 修复方案</h3>
-                    <p>以下是修复后的代码，解决了可能的问题：</p>
-                    
-                    <div class="code">
-# api/get-auth.py<br>
-import hmac<br>
-import hashlib<br>
-import time<br>
-import random<br>
-from flask import jsonify<br>
-<br>
-SECRET = "rhkigrqj0ci7ora0a1iuoz602qjm07d7"  # 你的 Chatbase 密钥<br>
-<br>
-def handler(request):<br>
-&nbsp;&nbsp;&nbsp;&nbsp;try:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 随机生成 userId<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user_id = f"guest_{int(time.time())}_{random.randint(1000,9999)}"<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# 生成 authToken<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;auth_token = hmac.new(<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SECRET.encode(), <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user_id.encode(), <br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hashlib.sha256<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;).hexdigest()<br>
-<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return jsonify({<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"userId": user_id,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"authToken": auth_token<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;})<br>
-&nbsp;&nbsp;&nbsp;&nbsp;except Exception as e:<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return jsonify({"error": str(e)}), 500
-                    </div>
-                    
-                    <div class="success">
-                        <p><strong>主要改进：</strong></p>
-                        <ul>
-                            <li>添加了异常处理，提供更好的错误信息</li>
-                            <li>使用<code>jsonify</code>确保正确的JSON响应</li>
-                            <li>简化了函数签名，移除类型注解以避免导入问题</li>
-                            <li>改进了代码格式，提高可读性</li>
-                        </ul>
+                    <h3><i class="fas fa-vial"></i> 测试结果</h3>
+                    <div id="test-result">
+                        <p>点击"测试 API"按钮开始测试...</p>
                     </div>
                 </div>
                 
-                <div class="test-area">
-                    <h3><i class="fas fa-vial"></i> 测试修复</h3>
-                    <p>点击下方按钮测试认证API是否正常工作：</p>
-                    <button class="btn" onclick="testAuth()">测试认证API</button>
-                    <div id="test-result"></div>
+                <div class="card">
+                    <h3><i class="fas fa-code"></i> Node.js HMAC 生成示例</h3>
+                    <div class="code">
+const crypto = require('crypto');
+
+const secret = 'your-secret-key'; // 您的验证密钥
+const userId = 'user-id'; // 识别用户的字符串UUID
+
+const hash = crypto.createHmac('sha256', secret)
+                   .update(userId)
+                   .digest('hex');
+                    </div>
+                    
+                    <div id="hash-result">
+                        <p>点击"生成 HMAC 哈希"按钮查看示例...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -262,38 +268,132 @@ def handler(request):<br>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <script>
         async function testAuth() {
+            const apiUrl = document.getElementById('api-url').value;
             const resultDiv = document.getElementById('test-result');
             resultDiv.innerHTML = '<p>正在测试API...</p>';
             
             try {
-                // 这里应该替换为您的API端点
-                const response = await fetch('/api/get-auth');
-                const data = await response.json();
+                const response = await fetch(apiUrl);
+                const responseText = await response.text();
                 
-                if (data.userId && data.authToken) {
+                // 尝试解析为JSON
+                let jsonData;
+                try {
+                    jsonData = JSON.parse(responseText);
+                } catch (e) {
+                    // 如果不是JSON，显示原始响应
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <p><strong>API返回了非JSON响应：</strong></p>
+                            <div class="response-info">
+                                <h4>HTTP状态码: ${response.status}</h4>
+                                <h4>响应类型: ${response.headers.get('content-type') || '未知'}</h4>
+                            </div>
+                            <pre>${escapeHtml(responseText.substring(0, 500))}${responseText.length > 500 ? '...' : ''}</pre>
+                            <p>这可能表明服务器端有错误。请检查：</p>
+                            <ul>
+                                <li>API端点URL是否正确</li>
+                                <li>服务器日志以获取详细错误信息</li>
+                                <li>服务器端代码是否有语法错误</li>
+                            </ul>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                if (jsonData.userId && jsonData.authToken) {
                     resultDiv.innerHTML = `
                         <div class="success">
-                            <p><strong>测试成功！</strong></p>
-                            <p>用户ID: ${data.userId}</p>
-                            <p>认证令牌: ${data.authToken.substring(0, 20)}...</p>
+                            <p><strong>API测试成功！</strong></p>
+                            <div class="response-info">
+                                <h4>用户ID: ${jsonData.userId}</h4>
+                                <h4>认证令牌: ${jsonData.authToken.substring(0, 20)}...</h4>
+                            </div>
+                            <p>您现在可以使用这些值配置Chatbase了。</p>
+                        </div>
+                    `;
+                } else if (jsonData.error) {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <p><strong>API返回了错误：</strong></p>
+                            <pre>${jsonData.error}</pre>
                         </div>
                     `;
                 } else {
                     resultDiv.innerHTML = `
                         <div class="error">
                             <p><strong>API返回了意外结果：</strong></p>
-                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                            <pre>${JSON.stringify(jsonData, null, 2)}</pre>
                         </div>
                     `;
                 }
             } catch (error) {
                 resultDiv.innerHTML = `
                     <div class="error">
-                        <p><strong>测试失败：</strong> ${error.message}</p>
-                        <p>请检查您的API端点是否正确部署。</p>
+                        <p><strong>请求失败：${error.message}</strong></p>
+                        <p>请检查：</p>
+                        <ul>
+                            <li>API端点URL是否正确</li>
+                            <li>网络连接是否正常</li>
+                            <li>是否存在CORS问题</li>
+                        </ul>
                     </div>
                 `;
             }
+        }
+        
+        function generateHash() {
+            const secret = document.getElementById('secret-key').value;
+            let userId = document.getElementById('user-id').value;
+            
+            if (!userId) {
+                // 生成随机用户ID
+                userId = 'guest_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+                document.getElementById('user-id').value = userId;
+            }
+            
+            // 在浏览器中生成HMAC哈希（使用Web Crypto API）
+            const encoder = new TextEncoder();
+            const keyData = encoder.encode(secret);
+            const userIdData = encoder.encode(userId);
+            
+            crypto.subtle.importKey(
+                'raw',
+                keyData,
+                { name: 'HMAC', hash: 'SHA-256' },
+                false,
+                ['sign']
+            ).then(key => {
+                return crypto.subtle.sign('HMAC', key, userIdData);
+            }).then(signature => {
+                // 将ArrayBuffer转换为十六进制字符串
+                const hashArray = Array.from(new Uint8Array(signature));
+                const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                document.getElementById('hash-result').innerHTML = `
+                    <div class="success">
+                        <p><strong>HMAC哈希生成成功：</strong></p>
+                        <div class="response-info">
+                            <h4>用户ID: ${userId}</h4>
+                            <h4>生成的哈希: ${hashHex}</h4>
+                        </div>
+                        <p>您可以使用这些值手动配置Chatbase。</p>
+                    </div>
+                `;
+            }).catch(error => {
+                document.getElementById('hash-result').innerHTML = `
+                    <div class="error">
+                        <p><strong>HMAC生成失败：${error.message}</strong></p>
+                    </div>
+                `;
+            });
+        }
+        
+        // 辅助函数：转义HTML特殊字符
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
     </script>
 </body>
