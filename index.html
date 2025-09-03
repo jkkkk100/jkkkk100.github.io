@@ -2,38 +2,28 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Chatbase with Random User</title>
+  <title>Chatbase with Vercel Auth</title>
   <style>
-    html, body {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    html, body { margin:0; padding:0; height:100%; width:100%; overflow:hidden; }
+    iframe { width:100%; height:100%; border:none; }
   </style>
 </head>
 <body>
   <script>
-    // 生成随机 userId：时间戳 + 随机数
-    const userId = "guest_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
+    async function loadChatbase() {
+      // ⚠️ 换成你在 Vercel 部署的 API 地址
+      const res = await fetch("https://chatbase-vercel-demo.vercel.app/get-auth");
+      const { userId, authToken } = await res.json();
 
-    // ?? 这里换成你自己的信息
-    const botId = "06_63h9wgHu7IeP5wxk1m";   // 你的 Chatbase Bot ID
-    const authToken = "rhkigrqj0ci7ora0a1iuoz602qjm07d7"; // 用密钥生成
+      const botId = "06_63h9wgHu7IeP5wxk1m"; // 你的 Chatbase Bot ID
+      const url = `https://www.chatbase.co/chatbot-iframe/${botId}?userId=${userId}&authToken=${authToken}`;
 
-    // 拼接 URL
-    const url = `https://www.chatbase.co/chatbot-iframe/${botId}?userId=${userId}&authToken=${authToken}`;
+      const iframe = document.createElement("iframe");
+      iframe.src = url;
+      document.body.appendChild(iframe);
+    }
 
-    // 动态创建 iframe
-    const iframe = document.createElement("iframe");
-    iframe.src = url;
-    document.body.appendChild(iframe);
+    loadChatbase();
   </script>
 </body>
 </html>
