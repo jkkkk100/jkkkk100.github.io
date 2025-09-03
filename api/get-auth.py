@@ -1,24 +1,21 @@
-# api/get-auth.py
-import hmac, hashlib, time, random, os
-from flask import Request
+import json
+import hmac
+import hashlib
+import base64
+import time
+import random
 
-# 从环境变量中加载密钥
-SECRET = os.environ.get("CHATBASE_SECRET") 
+def handler(request):
+    bot_id = "06_63h9wgHu7IeP5wxk1m"
+    secret = b"你的Secret"
 
-def handler(request: Request):
-    # 确保密钥已加载
-    if not SECRET:
-        return {"error": "Missing CHATBASE_SECRET environment variable"}, 500
-
-    # 随机生成 userId
-    user_id = f"guest_{int(time.time())}_{random.randint(1000,9999)}"
-
-    # 生成 authToken
-    auth_token = hmac.new(
-        SECRET.encode(), user_id.encode(), hashlib.sha256
-    ).hexdigest()
+    user_id = f"guest_{int(time.time()*1000)}_{random.randint(0,99999)}"
+    message = (user_id + bot_id).encode("utf-8")
+    signature = hmac.new(secret, message, hashlib.sha256).digest()
+    auth_token = base64.urlsafe_b64encode(signature).decode("utf-8").rstrip("=")
 
     return {
-        "userId": user_id,
-        "authToken": auth_token
+        "statusCode": 200,
+        "headers": {"Content-Type": "application/json"},
+        "body": json.dumps({"userId": user_id, "authToken": auth_token, "botId": bot_id})
     }
