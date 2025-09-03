@@ -1,5 +1,8 @@
 {
   "version": 2,
-  "builds": [{"src": "api/get-auth.py", "use": "@vercel/python"}],
-  "routes": [{"src": "/api/get-auth", "dest": "api/get-auth.py"}]
+  "functions": {
+    "api/get_auth_token.py": {
+      "runtime": "python3.11"
+    }
+  }
 }
