@@ -1,12 +1,28 @@
-<script>
-fetch("https://my-chatbase-api.vercel.app/api/get_auth_token")
-  .then(res => res.json())
-  .then(data => {
-    const iframeUrl = `https://www.chatbase.co/chatbot-iframe/${data.botId}?userId=${data.userId}&authToken=${data.authToken}`;
-    const iframe = document.createElement("iframe");
-    iframe.src = iframeUrl;
-    iframe.style.width = "100%";
-    iframe.style.height = "100%";
-    document.body.appendChild(iframe);
-  });
-</script>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chatbase with Auth</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      width: 100%;
+      overflow: hidden;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 带身份验证的 Chatbase 嵌入 -->
+  <iframe 
+    src="https://www.chatbase.co/chatbot-iframe/06_63h9wgHu7IeP5wxk1m?userId=user123&authToken=5c3f48a8c6c8e14b7d9c9d34a90e49e1c5b9a09d92d55a2a6e9276ac37d12345">
+  </iframe>
+</body>
+</html>
+
