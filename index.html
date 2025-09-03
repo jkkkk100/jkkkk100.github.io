@@ -12,7 +12,7 @@
   <script>
     async function loadChatbase() {
       // ⚠️ 换成你在 Vercel 部署的 API 地址
-      const res = await fetch("https://chatbase-vercel-demo.vercel.app/get-auth.py");
+      const res = await fetch("https://chatbase-vercel-demo.vercel.app/api/get-auth");
       const { userId, authToken } = await res.json();
 
       const botId = "06_63h9wgHu7IeP5wxk1m"; // 你的 Chatbase Bot ID
@@ -27,6 +27,7 @@
   </script>
 </body>
 </html>
+
 
 
 
