@@ -1,7 +1,7 @@
 // config.example.js
 module.exports = {
   chatbase: {
-    scriptId: 'your_chatbase_script_id_here',
+    scriptId: '06_63h9wgHu7IeP5wxk1m',
     domain: 'www.chatbase.co'
   },
   auth: {
