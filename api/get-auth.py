@@ -2,7 +2,7 @@ import hmac, hashlib, time, random, os
 from flask import Flask, request
 
 app = Flask(__name__)
-SECRET = os.getenv("CHATBASE_SECRET")  # 从环境变量读取密钥
+SECRET = os.getenv("CHATBASE_SECRET")
 
 @app.route("/api/get-auth", methods=["GET", "POST"])
 def get_auth():
