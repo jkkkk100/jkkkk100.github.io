@@ -20,17 +20,17 @@
 </head>
 <body>
   <script>
-    // Éú³ÉËæ»ú userId£ºÊ±¼ä´Á + Ëæ»úÊı
+    // ç”Ÿæˆéšæœº userIdï¼šæ—¶é—´æˆ³ + éšæœºæ•°
     const userId = "guest_" + Date.now() + "_" + Math.floor(Math.random() * 100000);
 
-    // ?? ÕâÀï»»³ÉÄã×Ô¼ºµÄĞÅÏ¢
-    const botId = "06_63h9wgHu7IeP5wxk1m";   // ÄãµÄ Chatbase Bot ID
-    const authToken = "rhkigrqj0ci7ora0a1iuoz602qjm07d7"; // ÓÃÃÜÔ¿Éú³É
+    // ?? è¿™é‡Œæ¢æˆä½ è‡ªå·±çš„ä¿¡æ¯
+    const botId = "06_63h9wgHu7IeP5wxk1m";   // ä½ çš„ Chatbase Bot ID
+    const authToken = "rhkigrqj0ci7ora0a1iuoz602qjm07d7"; // ç”¨å¯†é’¥ç”Ÿæˆ
 
-    // Æ´½Ó URL
+    // æ‹¼æ¥ URL
     const url = `https://www.chatbase.co/chatbot-iframe/${botId}?userId=${userId}&authToken=${authToken}`;
 
-    // ¶¯Ì¬´´½¨ iframe
+    // åŠ¨æ€åˆ›å»º iframe
     const iframe = document.createElement("iframe");
     iframe.src = url;
     document.body.appendChild(iframe);
